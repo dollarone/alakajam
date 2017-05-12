@@ -137,6 +137,7 @@ function createBookshelfInstance (knexInstance) {
 
     let weJam1 = new Event({
       title: '1st WeJam',
+      slug: '1st-wejam',
       status: 'closed',
       display_dates: 'Novembary 17 - 20, 2016',
       display_theme: 'Make a website'
@@ -148,6 +149,7 @@ function createBookshelfInstance (knexInstance) {
 
     let weJam2 = new Event({
       title: '2nd WeJam',
+      slug: '2nd-wejam',
       status: 'open',
       display_dates: 'Januember 29 - 31, 2017',
       display_theme: 'You are not alone'

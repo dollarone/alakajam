@@ -43,6 +43,7 @@ function createModel () {
     if (applyVersion === 1) {
       await db.knex.schema.createTableIfNotExists('event', function (table) {
         table.increments('id').primary()
+        table.string('slug')
         table.string('name')
         table.string('title')
         table.string('display_dates')

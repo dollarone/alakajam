@@ -20,14 +20,14 @@ function buildUrl (model, type, page = null) {
 
   if (type === 'event') {
     // Event model
-    return '/event/' + model.get('id') + pagePath
+    return '/event/' + model.get('slug') + pagePath
 
   } else if (type === 'entry') {
     // Entry model
     if (model && model.get('id')) {
       return '/entry/' + model.get('id') + pagePath
     } else {
-      return '/event/' + model.get('event_id') + '/create-entry'
+      return buildUrl(model.related('event'), 'event', 'create-entry')
     }
 
   } else if (type === 'user') {

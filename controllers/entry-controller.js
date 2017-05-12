@@ -15,10 +15,10 @@ module.exports = {
 
   initRoutes: function (app) {
     app.use('/entry/:id*', entryMiddleware)
-    app.use('/event/:eventId*', entryMiddleware)
+    app.use('/event/:eventSlug*', entryMiddleware)
 
-    app.get('/event/:eventId/create-entry', createEntry)
-    app.post('/event/:eventId/create-entry', saveEntry)
+    app.get('/event/:eventSlug/create-entry', createEntry)
+    app.post('/event/:eventSlug/create-entry', saveEntry)
     app.get('/entry/:id', viewEntry)
     app.post('/entry/:id', saveEntry)
     app.get('/entry/:id/edit', editEntry)
@@ -41,10 +41,17 @@ async function entryMiddleware (req, res, next) {
       next()
     }
   }
-  if (req.params.eventId) {
-    res.locals.event = await eventService.findEventById(req.params.eventId)
+  if (req.params.eventSlug) {
+    res.locals.event = await eventService.findEventBySlug(req.params.eventSlug)
     next()
   }
+}
+
+/**
+ * Redirects to the given entry.
+ */
+function redirectToEntry (entry, res) {
+  res.redirect(templating.buildUrl(entry, 'entry'))
 }
 
 /**
@@ -55,12 +62,25 @@ function viewEntry (req, res) {
 }
 
 /**
- * Edit entry
+ * Create entry
  */
 async function createEntry (req, res) {
-  res.render('entry/edit-entry', {entry: new Entry({
+  let entry =
+      res.locals.userEntry ||
+      await eventService.findUserEntryForEvent(res.locals.user, res.locals.event.get('id'));
+  if (entry) {
+    redirectToEntry(entry, res)
+    return
+  }
+
+  // HACK: the new Entry must have a related Event already fetched, otherwise
+  // we can't create URLs containing the event slug.
+  // TODO see if we can use res.locals.event to populate the related event model
+  entry = new Entry({
     event_id: res.locals.event.get('id')
-  })})
+  })
+  await entry.related('event').fetch()
+  res.render('entry/edit-entry', {entry: entry})
 }
 
 /**
@@ -103,12 +123,12 @@ async function saveEntry (req, res) {
     await entry.save()
     await entry.related('userRoles').fetch()
 
-    viewEntry(req, res)
+    redirectToEntry(entry, res)
   }
 }
 
 async function deleteEntry (req, res, next) {
   await res.locals.entry.destroy()
-  req.url = templating.buildUrl(res.locals.event, 'event')
-  next()
+
+  res.redirect(templating.buildUrl(res.locals.event, 'event'))
 }

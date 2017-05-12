@@ -11,6 +11,7 @@ const Entry = require('../models/entry-model')
 
 module.exports = {
   findEventById,
+  findEventBySlug,
   findAllEvents,
   findEventByStatus,
 
@@ -27,6 +28,16 @@ module.exports = {
  */
 async function findEventById (id) {
   return Event.where('id', id)
+    .fetch({ withRelated: ['entries', 'entries.userRoles'] })
+}
+
+/**
+ * Fetches an Event by its slug, with all its entries.
+ * @param slug {slug} Event slug
+ * @returns {Event}
+ */
+async function findEventBySlug (slug) {
+  return Event.where('slug', slug)
     .fetch({ withRelated: ['entries', 'entries.userRoles'] })
 }
 
