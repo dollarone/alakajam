@@ -20,7 +20,7 @@ function buildUrl (model, type, page = null) {
 
   if (type === 'event') {
     // Event model
-    return '/event/' + model.get('slug') + pagePath
+    return '/' + model.get('slug') + pagePath
 
   } else if (type === 'entry') {
     // Entry model

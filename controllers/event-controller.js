@@ -11,9 +11,10 @@ const eventService = require('../services/event-service')
 module.exports = {
 
   initRoutes: function (app) {
-    app.use('/event/:eventSlug*', eventMiddleware)
+    app.use('/:eventSlug([^/]*-[^/]*)', eventMiddleware)
+    app.use('/:eventSlug([^/]*-[^/]*)/*', eventMiddleware)
 
-    app.get('/event/:eventSlug', viewEvent)
+    app.get('/:eventSlug([^/]*-[^/]*)', viewEvent)
   }
 
 }

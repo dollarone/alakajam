@@ -15,10 +15,11 @@ module.exports = {
 
   initRoutes: function (app) {
     app.use('/entry/:id*', entryMiddleware)
-    app.use('/event/:eventSlug*', entryMiddleware)
+    app.use('/:eventSlug([^/]*-[^/]*)', entryMiddleware)
+    app.use('/:eventSlug([^/]*-[^/]*)/*', entryMiddleware)
 
-    app.get('/event/:eventSlug/create-entry', createEntry)
-    app.post('/event/:eventSlug/create-entry', saveEntry)
+    app.get('/:eventSlug([^/]*-[^/]*)/create-entry', createEntry)
+    app.post('/:eventSlug([^/]*-[^/]*)/create-entry', saveEntry)
     app.get('/entry/:id', viewEntry)
     app.post('/entry/:id', saveEntry)
     app.get('/entry/:id/edit', editEntry)
